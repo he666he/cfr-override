@@ -1,0 +1,9 @@
+# run logs from Set-FeatureOverride.ps1
+logs/
+*.log
+
+# editor / OS noise
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
