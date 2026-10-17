@@ -23,7 +23,7 @@ HKLM\SYSTEM\CurrentControlSet\Control\FeatureManagement\Overrides\<组号>\<功�
 ## 它不是什么
 
 * **不是**功能 ID 数据库。ID 会随 Windows 版本变化，有些功能甚至不再受开关控制，ID 需要你自己提供。
-* **不是**"一键还原某功能"的按钮。写进去但外壳不再读的开关，不会有任何可见效果。真实案例见 [docs/case-study-start-menu.md](docs/case-study-start-menu.md)。
+* **不是**"一键还原某功能"的按钮。写进去但外壳不再读的开关，不会有任何可见效果。真实案例见[案例研究](docs/case-study-start-menu.zh-CN.md)。
 
 ## 为什么不直接推荐 ViVeTool
 
@@ -91,7 +91,7 @@ ViVeTool 很成熟，能用就用它。
 7. **重启**，然后看结果。任何时候都能用 `-Remove` 撤销。
 
 本仓库**不提供功能 ID 列表**，它只是按你给的 ID 写入状态。如果你不知道自己需要哪个 ID，
-这个工具帮不了你——原因写在[案例研究](docs/case-study-start-menu.md)里。
+这个工具帮不了你——原因写在[案例研究](docs/case-study-start-menu.zh-CN.md)里。
 
 ## 安全设计
 

@@ -1,5 +1,7 @@
 # Case study: the Start menu that would not go back
 
+English | [简体中文](case-study-start-menu.zh-CN.md)
+
 This is the investigation that produced this tool. It is worth publishing because
 the negative result is more useful than the code: **writing a feature override can
 succeed and still change nothing.**

@@ -4,6 +4,23 @@ All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-10-18
+
+### Fixed
+
+- `Set-FeatureOverride.ps1` resolved `-LogPath` from `$PSScriptRoot` inside a
+  parameter default. `$PSScriptRoot` is empty while parameter defaults are evaluated
+  when the script is started with `powershell -File`, so every `-File` invocation
+  failed before doing anything. The path is now resolved in the script body. This is
+  the invocation form the README recommends for first-time users, so it mattered.
+
+### Added
+
+- `docs/case-study-start-menu.zh-CN.md` - Chinese translation of the case study.
+- Case study outcome: on Windows 11 25H2 build `26200.8457`, group 4 feature id
+  `3036241548` switches between the new and classic Start menu. `47205210`, which is
+  what the guides quote, does nothing on that build.
+
 ## [0.1.0] - 2026-10-18
 
 First public release.
