@@ -82,6 +82,45 @@ for confirmation. In scripts or unattended runs add `-Confirm:$false`:
 .\Set-FeatureOverride.ps1 -FeatureId 12345678 -State Disabled -Confirm:$false
 ```
 
+## For first-time users
+
+Nothing to install. PowerShell ships with Windows.
+
+1. **Download.** Press **Code - Download ZIP** on this page, then extract it to a
+   permanent folder such as `C:\Tools\cfr-override`. Do not run it from inside the
+   ZIP, and do not leave it in `Downloads`.
+2. **Unblock the files.** Windows tags anything that came from the internet, and a
+   blocked script fails to run with a confusing error. Either right-click the ZIP,
+   choose Properties, tick **Unblock** *before* extracting, or after extracting run:
+   ```powershell
+   Get-ChildItem -Path C:\Tools\cfr-override -Recurse | Unblock-File
+   ```
+3. **Open PowerShell.** Press `Win`, type `powershell`, press Enter. For anything
+   that *writes* (`-State`, `-Remove`, `-Repair`) right-click it first and choose
+   **Run as administrator**.
+4. **Allow scripts for this window only**, if you see "running scripts is disabled
+   on this system":
+   ```powershell
+   Set-ExecutionPolicy -Scope Process Bypass
+   ```
+   `-Scope Process` means it applies to that one window and is gone when you close
+   it. Do not change the machine-wide policy just for this.
+5. **Look before you touch anything.**
+   ```powershell
+   cd C:\Tools\cfr-override
+   .\Get-FeatureOverrides.ps1 -Recent 7
+   ```
+6. **Dry run, then apply.**
+   ```powershell
+   .\Set-FeatureOverride.ps1 -FeatureId <id> -State Disabled -WhatIf
+   .\Set-FeatureOverride.ps1 -FeatureId <id> -State Disabled
+   ```
+7. **Reboot**, then check the result. Undo at any time with `-Remove`.
+
+This repository contains **no list of feature ids**. It sets a value for an id you
+already have. If you do not know which id you need, this tool cannot guess it for
+you - read [the case study](docs/case-study-start-menu.md) to see why.
+
 ## Safety model
 
 * **Backup before change**: the group key's SDDL is read first and written back at

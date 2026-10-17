@@ -60,6 +60,39 @@ ViVeTool 很成熟，能用就用它。
 
 `Set-FeatureOverride.ps1` 声明了 `ConfirmImpact = 'High'`，真正改动前会请求确认。放进脚本或无人值守运行时加上 `-Confirm:$false`：
 
+## 第一次用？从这里开始
+
+**不需要安装任何东西**，PowerShell 是 Windows 自带的。
+
+1. **下载**：在本页点 **Code → Download ZIP**，解压到一个固定的目录，比如
+   `C:\Tools\cfr-override`。**不要**在压缩包里直接运行，也别留在"下载"文件夹里。
+2. **解除锁定**：从网上下载的脚本会被 Windows 标记，直接跑会报一个很难懂的错。
+   要么解压**之前**右键压缩包 → 属性 → 勾选"解除锁定"，要么解压后执行：
+   ```powershell
+   Get-ChildItem -Path C:\Tools\cfr-override -Recurse | Unblock-File
+   ```
+3. **打开 PowerShell**：按 `Win` 键，输入 `powershell`，回车。
+   凡是**会写入**的操作（`-State`、`-Remove`、`-Repair`）都要右键选择"以管理员身份运行"。
+4. **只为当前窗口放开脚本限制**（如果提示"在此系统上禁止运行脚本"）：
+   ```powershell
+   Set-ExecutionPolicy -Scope Process Bypass
+   ```
+   `-Scope Process` 表示只影响这一个窗口，关掉就失效，**不要**为此改动整台机器的策略。
+5. **先看，不动手**：
+   ```powershell
+   cd C:\Tools\cfr-override
+   .\Get-FeatureOverrides.ps1 -Recent 7
+   ```
+6. **先空跑，再执行**：
+   ```powershell
+   .\Set-FeatureOverride.ps1 -FeatureId <功能ID> -State Disabled -WhatIf
+   .\Set-FeatureOverride.ps1 -FeatureId <功能ID> -State Disabled
+   ```
+7. **重启**，然后看结果。任何时候都能用 `-Remove` 撤销。
+
+本仓库**不提供功能 ID 列表**，它只是按你给的 ID 写入状态。如果你不知道自己需要哪个 ID，
+这个工具帮不了你——原因写在[案例研究](docs/case-study-start-menu.md)里。
+
 ## 安全设计
 
 * **先备份**：改动前读取组键的 SDDL，结束时写回，并报告是否与原始一致；
