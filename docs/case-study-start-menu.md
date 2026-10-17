@@ -60,15 +60,45 @@ After a reboot the Start menu was unchanged.
 
 ## What that means
 
-Two independent possibilities, and the log cannot tell them apart:
+The first guess was simply the wrong id for this build. `47205210` belongs to the
+build-7019 era; this machine runs `.8457`.
 
-1. the id is stale for this build, or
-2. the feature is no longer read from the CFR store on this build
+## Resolution
 
-Finding the right id means picking one candidate out of ~2400 numeric ids with no
-names attached and one reboot per trial. That is not a search worth automating, and
-it is not something a tool can solve - it needs a curated id list, which is exactly
-what ViVeTool and its community maintain and this repo deliberately does not.
+A targeted bisect found the real one.
+
+Start from `Get-FeatureOverrides.ps1 -Recent 3`: 186 overrides had been written in
+the previous three days, and the largest single burst was 38 overrides in group 4,
+all in the same minute - the machine's first boot of the day.
+
+Filtering those to `EnabledState = 2` left 33 candidates. Disabling all 33 restored
+the classic Start menu, which proved the flag was in that set. Then bisect by
+halves, one reboot per round:
+
+```
+33 -> 16 -> 8 -> 4 -> 2 -> 1
+```
+
+Result, on Windows 11 25H2 build `26200.8457`:
+
+| | |
+|---|---|
+| group | `4` |
+| feature id | **`3036241548`** |
+| `EnabledState = 2` | new Start menu |
+| `EnabledState = 1` | classic Start menu |
+| original `EnabledStateOptions` | `1` (the tool writes `0`; no observed difference) |
+| original `Variant` | `0` |
+
+```powershell
+# classic Start menu
+.\Set-FeatureOverride.ps1 -FeatureId 3036241548 -Group 4 -State Disabled
+# back to the new menu
+.\Set-FeatureOverride.ps1 -FeatureId 3036241548 -Group 4 -State Enabled
+```
+
+Reboot after either. This id is good for `26200.8457` only - do not assume it
+carries to another build.
 
 ## Transferable lessons
 
@@ -79,3 +109,6 @@ what ViVeTool and its community maintain and this repo deliberately does not.
   will remove it.
 * Pausing Windows Update does not stop Defender definition updates or Store app
   updates. Both arrive through the same client.
+* When a UI changes "by itself", sort overrides by last-write time across **all**
+  groups and look for a burst at a boot. That burst is the candidate set.
+* Bisecting 33 features costs six reboots and is far cheaper than guessing ids.
