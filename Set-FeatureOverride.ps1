@@ -105,7 +105,9 @@ param(
     [ValidateRange(0, [int]::MaxValue)]
     [int]$VariantPayloadKind = 0,
 
-    [string]$LogPath = (Join-Path $PSScriptRoot 'logs')
+    # Resolved in the body below: $PSScriptRoot is empty while parameter
+    # defaults are evaluated when the script starts via 'powershell -File'.
+    [string]$LogPath
 )
 
 $ErrorActionPreference = 'Stop'
@@ -236,6 +238,12 @@ $TiSidValue   = $TiSid.Translate([Security.Principal.SecurityIdentifier])
 $AceMarker    = '(A;CI;KA;;;BA)'
 
 $script:LogFile = $null
+if (-not $LogPath) {
+    $scriptRoot = $PSScriptRoot
+    if (-not $scriptRoot) { $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path }
+    if (-not $scriptRoot) { $scriptRoot = (Get-Location).Path }
+    $LogPath = Join-Path $scriptRoot 'logs'
+}
 # Deliberately .NET file APIs, not New-Item/Add-Content: those cmdlets honour
 # -WhatIf and would suppress logging during a dry run.
 if (-not (Test-Path -LiteralPath $LogPath)) {
